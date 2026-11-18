@@ -28,8 +28,17 @@ jobs:
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
       - name: Format
-        run: cargo fmt --all -- --check
+        shell: pwsh
+        run: |
+          $metadata = cargo metadata --no-deps --format-version 1 | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { throw 'cargo metadata failed' }
+          foreach ($package in $metadata.packages) {
+            cargo fmt -p $package.name -- --check
+            if ($LASTEXITCODE -ne 0) { throw "Formatting failed for $($package.name)" }
+          }
       - name: Compile desktop and CLI
         run: cargo build --locked --release --target x86_64-pc-windows-msvc -p craft-anything -p craft-anything-cli
       - name: Codex adapter and rebuild regression tests
