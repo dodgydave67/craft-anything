@@ -1,15 +1,6 @@
 <!-- ไฟล์นี้เป็นฉบับแปลภาษาไทยของ README.md หากต้นฉบับภาษาอังกฤษมีการเปลี่ยนแปลง โปรดอัปเดตไฟล์นี้ด้วย -->
 
 <p align="center">
-  <a href="https://getartcraft.com/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/brand/artcraft-logo-white.svg">
-      <img alt="ArtCraft" src="docs/brand/artcraft-logo.svg" width="200">
-    </picture>
-  </a>
-</p>
-
-<p align="center">
   <img src="assets/app-icon/hicolor/256x256/apps/ai.storyteller.craft-anything.png" width="128" height="128" alt="ไอคอน Craft Anything: นกการาวแกะสลักบนแผ่นกระเบื้องสีน้ำเงิน">
 </p>
 
@@ -391,8 +382,3 @@ Craft Anything เผยแพร่ภายใต้สัญญาอนุ�
 ภาพหน้าจอตัวอย่างแสดงโปรเจกต์ตัวอย่างที่สร้างขึ้น ได้แก่ example.com, เกมงู และโปรแกรมเครื่องคิดเลขขนาดเล็ก
 
 ชื่อ เครื่องหมายคำ และโลโก้ของ ArtCraft ใน [`docs/brand/`](docs/brand/) เป็นเครื่องหมายการค้าของทีมงาน ArtCraft และไม่อยู่ภายใต้สัญญาอนุญาตนี้ โดยอนุญาตให้ใช้งานได้เฉพาะในสภาพดั้งเดิมที่ไม่มีการดัดแปลง และใช้เป็นส่วนหนึ่งของคลังข้อมูลนี้รวมถึง Craft Anything ภายใต้เงื่อนไขใน [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt) เท่านั้น ผู้ที่นำไป fork หรือดัดแปลงต่อจะต้องนำเครื่องหมายเหล่านี้ออก
-
-<p align="center">
-  <a href="https://getartcraft.com/"><img alt="ArtCraft" src="docs/brand/artcraft-mark.svg" width="28"></a><br>
-  <sub>สร้างสรรค์โดยทีมงานและชุมชน <a href="https://getartcraft.com/">ArtCraft</a></sub>
-</p>

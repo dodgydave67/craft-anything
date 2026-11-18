@@ -1,15 +1,6 @@
 <!-- 本文件是 README.md 的简体中文翻译；英文版有改动时请一并更新本文件。 -->
 
 <p align="center">
-  <a href="https://getartcraft.com/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/brand/artcraft-logo-white.svg">
-      <img alt="ArtCraft" src="docs/brand/artcraft-logo.svg" width="200">
-    </picture>
-  </a>
-</p>
-
-<p align="center">
   <img src="assets/app-icon/hicolor/256x256/apps/ai.storyteller.craft-anything.png" width="128" height="128" alt="Craft Anything 图标：蓝色底块上雕刻的乌鸦">
 </p>
 
@@ -344,11 +335,6 @@ Copyright (c) 2026 ArtCraft Team and the Craft Anything contributors ([CONTRIBUT
 [`docs/brand/`](docs/brand/) 里的 ArtCraft 名称、标志图形和 logo 是 ArtCraft Team 的商标，不在本许可范围内。
 它们只能在未作修改的前提下，作为本仓库和 Craft Anything 的一部分使用，并须遵守
 [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt)。分支和修改版必须移除它们。
-
-<p align="center">
-  <a href="https://getartcraft.com/"><img alt="ArtCraft" src="docs/brand/artcraft-mark.svg" width="28"></a><br>
-  <sub>由 <a href="https://getartcraft.com/">ArtCraft</a> 团队与社区制作。</sub>
-</p>
 
 ---
 

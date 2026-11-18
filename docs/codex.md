@@ -47,7 +47,7 @@ Codex's own settings decide this; Craft Anything's consent is a second, separate
 ## What we set
 
 Only tools that ask the person themselves are approved on Codex's side
-(`AGENT_APP_PREAPPROVED_TOOLS` in the engine, today just `rebuild_start`; a test checks each one
+(`AGENT_APP_PREAPPROVED_TOOLS` in the engine, `rebuild_start`, `runtime_ui_read` and `runtime_ui_walkthrough_record` in this fork; a test checks each one
 asks for consent). Every other tool keeps whatever approval policy you set in Codex.
 
 So when a build's feed says Codex blocked another of our tools, such as `build_command_run`,
@@ -165,3 +165,8 @@ not persist those conversations, so their reported ids cannot be resumed later.
 Remove that option to use the project's saved conversation. A two-turn subprocess
 regression checks that both attempts explain the refusal, start no Codex process
 and save no session id.
+
+
+## Personal Windows walkthrough build
+
+See [the fork build notes](codex-windows-fork.md) for the download workflow, observation-continuation changes and verification limits.

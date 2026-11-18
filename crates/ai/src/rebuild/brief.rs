@@ -22,7 +22,7 @@ pub(super) fn steps(deep: bool) -> String {
     let follow_up = if deep {
         "capture another width or an opened state into a new folder under checks/, inspect a page or a bundle, look up a program's strings or functions by their exact names, read a game's settings or files."
     } else {
-        "capture another width or an opened state of a website into a new folder under checks/, or ask the person with core_person_ask. Clean room: nothing inside the original is looked at, so never open, read, list, fetch, run or decompile its files, its folder, its pages' code or its program, with any tool."
+        "capture another width or an opened state of a website into a new folder under checks/, observe a running desktop app's visible controls with runtime_ui_read and runtime_ui_walkthrough_record (with consent), or ask the person with core_person_ask. Clean room: nothing inside the original is looked at, so never open, read, list, fetch or decompile its files, its folder or its pages' code, and never launch its program through a shell. Use only the consent-gated observation tools for runtime study."
     };
     format!(
         "How to work: you lead the investigation and the craft-anything tools answer your questions with evidence.
@@ -106,7 +106,8 @@ fn program_from_outside(sees: bool) -> String {
         "Build from the person's request and description and capture/README.md (with capture/ui-tree.json, the list of its window's controls, when capture/ has one). You can't look at the pictures in reference/ or capture/, so ask the person with core_person_ask how it looks wherever that changes what you build.",
     );
     format!(
-        "capture/README.md says what we could see from outside. Clean room: nothing inside the program, its files or its folder was read, and you must not open, list, read, run or decompile anything there either (the tools that look inside are off, and reading its files is refused). {build_from}"
+        "capture/README.md says what we could see from outside. Clean room: nothing inside the program, its files or its folder was read, and you must not open, list, read or decompile anything there either (the tools that look inside are off, and reading its files is refused). {build_from}\n\n{}",
+        live_ui_reminder(),
     )
 }
 
@@ -362,8 +363,14 @@ pub(super) fn pictures_reminder(ws: &Workspace, sees: bool) -> String {
         return format!("\n\nKeep to what the person said their {n} picture(s) of the original in reference/ show; you can't look at them yourself.");
     }
     format!(
-        "\n\nKeep matching the {n} picture(s) of the original in reference/ (open any you haven't looked at yet), and compare a fresh screenshot of your build with them before you reply."
+        "\n\nKeep matching the {n} picture(s) of the original in reference/ (open any you haven't looked at yet), using each only for the screen or state it shows. Also use the live UI evidence already collected. The person's latest request determines which state to implement next; an old home-screen picture must not replace a request to work on the document editor or another observed state. Compare a fresh screenshot of that state in your build with its corresponding evidence before you reply. A similarity score for one screen verifies only that screen, not the rest of the app or its behaviour."
     )
+}
+
+/// Runtime observation is available in Clean room, but the builder must retain its evidence
+/// when a follow-up resumes the conversation instead of returning to the first uploaded image.
+pub(super) fn live_ui_reminder() -> &'static str {
+    "Live desktop observation: when the task needs another screen, use runtime_ui_read on the running original and runtime_ui_walkthrough_record for supported visible-control actions. These tools ask for consent in Craft Anything; never bypass that consent or inspect the original's files, code, resources or process memory. Read the tools' schemas and use only supported actions. If the app is not running and no permitted tool can start it, ask the person to open it. For unsupported actions such as drawing or typing, ask for just that action, then read the live UI again after their reply. Before implementing a follow-up, call core_investigation_show to recover its handoff, recorded observations and unfinished step; a reply such as 'done' continues that step. Browse the referenced evidence when needed rather than repeating an already answered observation. Before yielding, update core_handoff_write with the observed states, evidence ids, implemented work, outstanding questions and exact next step. Implement the requested observed state in app/ and verify that same state; don't declare the whole app matched from its startup screenshot."
 }
 
 pub(super) fn added_prompt(notes: &[String]) -> String {

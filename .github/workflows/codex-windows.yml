@@ -1,0 +1,74 @@
+name: Codex Windows build
+
+on:
+  push:
+    branches: [bugfix/r2.2-codex-windows-walkthrough]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codex-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 90
+    env:
+      CARGO_PROFILE_RELEASE_LTO: 'false'
+      CARGO_PROFILE_RELEASE_CODEGEN_UNITS: '16'
+      CARGO_PROFILE_RELEASE_OPT_LEVEL: '2'
+      CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS: '-C target-feature=+crt-static'
+      CRAFT_ANYTHING_REQUIRE_WINRES: '1'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all -- --check
+      - name: Compile desktop and CLI
+        run: cargo build --locked --release --target x86_64-pc-windows-msvc -p craft-anything -p craft-anything-cli
+      - name: Codex adapter and rebuild regression tests
+        run: cargo test --locked --release --target x86_64-pc-windows-msvc -p craft-anything-ai --lib
+      - name: Setup regression tests
+        run: cargo test --locked --release --target x86_64-pc-windows-msvc -p craft-anything-setup --lib
+      - name: Windows visible-control walkthrough tests
+        run: cargo test --locked --release --target x86_64-pc-windows-msvc -p craft-anything-engine --lib tools::apple_runtime::tests -- --test-threads=1
+      - name: Policy checks
+        shell: pwsh
+        run: |
+          foreach ($check in 'layers', 'locks', 'secrets') {
+            cargo xtask $check
+            if ($LASTEXITCODE -ne 0) { throw "$check failed" }
+          }
+      - name: Stage Windows download
+        shell: pwsh
+        run: |
+          $stage = 'dist/Craft-Anything-Codex'
+          New-Item -ItemType Directory -Force $stage | Out-Null
+          Copy-Item target/x86_64-pc-windows-msvc/release/craft-anything.exe $stage
+          Copy-Item target/x86_64-pc-windows-msvc/release/craft-anything-cli.exe $stage
+          Copy-Item LICENSE-MIT, LICENSE-APACHE, NOTICE, ATTRIBUTION.md $stage
+          Copy-Item assets/fonts/OFL-*.txt $stage
+          Copy-Item docs/codex-windows-fork.md "$stage/READ-ME-FIRST.md"
+          Copy-Item packaging/windows/Connect-Codex.cmd $stage
+          @("Personal Codex walkthrough build", "Source: $env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY", "Commit: $env:GITHUB_SHA", "Unsigned community build; not an official release.") | Set-Content "$stage/BUILD.txt"
+          & "$stage/craft-anything-cli.exe" --version
+          if ($LASTEXITCODE -ne 0) { throw 'CLI smoke failed' }
+          & "$stage/craft-anything.exe" --version
+          if ($LASTEXITCODE -ne 0) { throw 'Desktop version smoke failed' }
+          Compress-Archive -Path $stage -DestinationPath dist/Craft-Anything-Codex-Windows-x64.zip
+          $hash = (Get-FileHash dist/Craft-Anything-Codex-Windows-x64.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  Craft-Anything-Codex-Windows-x64.zip" | Set-Content dist/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Craft-Anything-Codex-Windows-x64
+          path: |
+            dist/Craft-Anything-Codex-Windows-x64.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 90
