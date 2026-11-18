@@ -22,7 +22,7 @@ pub(super) fn steps(deep: bool) -> String {
     let follow_up = if deep {
         "capture another width or an opened state into a new folder under checks/, inspect a page or a bundle, look up a program's strings or functions by their exact names, read a game's settings or files."
     } else {
-        "capture another width or an opened state of a website into a new folder under checks/, observe a running desktop app's visible controls with runtime_ui_read and runtime_ui_walkthrough_record (with consent), or ask the person with core_person_ask. Clean room: nothing inside the original is looked at, so never open, read, list, fetch or decompile its files, its folder or its pages' code, and never launch its program through a shell. Use only the consent-gated observation tools for runtime study."
+        "capture another width or an opened state of a website into a new folder under checks/, observe a running desktop app's visible controls with runtime_ui_read and runtime_ui_walkthrough_record (with consent), or ask the person with core_person_ask. Clean room: nothing inside the original is looked at, so never open, read, list, fetch, run or decompile its files, its folder or its pages' code. Runtime observation is limited to the consent-gated tools above; never launch its program through a shell."
     };
     format!(
         "How to work: you lead the investigation and the craft-anything tools answer your questions with evidence.
