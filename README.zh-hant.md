@@ -1,13 +1,4 @@
 <p align="center">
-  <a href="https://getartcraft.com/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/brand/artcraft-logo-white.svg">
-      <img alt="ArtCraft" src="docs/brand/artcraft-logo.svg" width="200">
-    </picture>
-  </a>
-</p>
-
-<p align="center">
   <img src="assets/app-icon/hicolor/256x256/apps/ai.storyteller.craft-anything.png" width="128" height="128" alt="Craft Anything 圖示：藍色方塊上一隻版畫風格的渡鴉">
 </p>
 
@@ -413,11 +404,6 @@ Copyright (c) 2026 ArtCraft Team and the Craft Anything contributors. 必要的�
 不在本授權範圍內。它們只能在未經修改的情況下，作為本儲存庫與 Craft Anything 的一部分使用，
 並須遵守 [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt)。
 分支（fork）與修改版本必須移除它們。
-
-<p align="center">
-  <a href="https://getartcraft.com/"><img alt="ArtCraft" src="docs/brand/artcraft-mark.svg" width="28"></a><br>
-  <sub>由 <a href="https://getartcraft.com/">ArtCraft</a> 團隊與社群製作。</sub>
-</p>
 
 ---
 

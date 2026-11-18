@@ -648,9 +648,29 @@ impl Server {
         {
             return json!({"content": [{"type": "text", "text": serde_json::to_string(v).unwrap_or_default()}], "isError": false});
         }
-        let payload = out.to_json();
+        let mut payload = out.to_json();
+        // A screenshot encoded only inside JSON is text to an MCP client. Deliver the live
+        // runtime reader's PNG as an image block, keeping its metadata in the text projection
+        // and the original bytes in retained evidence. Never reinterpret arbitrary tool data.
+        let image = if self.engine.registry().canonical(name) == Some("runtime_ui_read") {
+            payload.pointer_mut("/result/screenshot").and_then(Value::as_object_mut).and_then(|shot| {
+                if shot.get("media_type").and_then(Value::as_str) != Some("image/png") {
+                    return None;
+                }
+                let data = shot.get("base64").and_then(Value::as_str).filter(|data| !data.is_empty() && data.len() <= 3 * 1024 * 1024)?.to_string();
+                shot.remove("base64");
+                shot.insert("delivered_as".into(), json!("image_content"));
+                Some(json!({"type": "image", "data": data, "mimeType": "image/png"}))
+            })
+        } else {
+            None
+        };
         let text = serde_json::to_string(&payload).unwrap_or_default();
-        json!({"content": [{"type": "text", "text": text}], "structuredContent": payload, "isError": false})
+        let mut content = vec![json!({"type": "text", "text": text})];
+        if let Some(image) = image {
+            content.push(image);
+        }
+        json!({"content": content, "structuredContent": payload, "isError": false})
     }
 
     /// Mark a result as carrying content from the target so the client treats it as data, not
@@ -883,5 +903,7 @@ fn meta_enable_toolset(sets: &[Toolset]) -> Value {
     })
 }
 
+#[cfg(test)]
+mod screenshot_tests;
 #[cfg(test)]
 mod tests;

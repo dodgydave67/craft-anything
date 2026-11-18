@@ -1,13 +1,4 @@
 <p align="center">
-  <a href="https://getartcraft.com/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/brand/artcraft-logo-white.svg">
-      <img alt="ArtCraft" src="docs/brand/artcraft-logo.svg" width="200">
-    </picture>
-  </a>
-</p>
-
-<p align="center">
   <img src="assets/app-icon/hicolor/256x256/apps/ai.storyteller.craft-anything.png" width="128" height="128" alt="Icono de Craft Anything: un cuervo grabado sobre una loseta azul">
 </p>
 
@@ -443,11 +434,6 @@ El nombre ArtCraft, la marca denominativa y los logotipos en [`docs/brand/`](doc
 del ArtCraft Team y no están cubiertos por esta licencia. Solo pueden usarse sin modificar y solo como
 parte de este repositorio y de Craft Anything, bajo [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt).
 Los forks y las versiones modificadas deben eliminarlos.
-
-<p align="center">
-  <a href="https://getartcraft.com/"><img alt="ArtCraft" src="docs/brand/artcraft-mark.svg" width="28"></a><br>
-  <sub>Hecho por el equipo y la comunidad de <a href="https://getartcraft.com/">ArtCraft</a>.</sub>
-</p>
 
 ---
 

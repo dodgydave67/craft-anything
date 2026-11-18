@@ -1,15 +1,6 @@
 <!-- Tệp này là bản dịch tiếng Việt của README.md; khi bản tiếng Anh thay đổi, hãy cập nhật cả tệp này. -->
 
 <p align="center">
-  <a href="https://getartcraft.com/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/brand/artcraft-logo-white.svg">
-      <img alt="ArtCraft" src="docs/brand/artcraft-logo.svg" width="200">
-    </picture>
-  </a>
-</p>
-
-<p align="center">
   <img src="assets/app-icon/hicolor/256x256/apps/ai.storyteller.craft-anything.png" width="128" height="128" alt="Biểu tượng Craft Anything: một con quạ khắc trên ô gạch xanh">
 </p>
 
@@ -418,11 +409,6 @@ Tên ArtCraft, wordmark và logo trong [`docs/brand/`](docs/brand/) là thương
 ArtCraft Team và không thuộc giấy phép này. Chúng chỉ được dùng nguyên vẹn, và chỉ như
 một phần của kho lưu trữ này và Craft Anything, theo [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt).
 Fork và phiên bản sửa đổi phải gỡ bỏ chúng.
-
-<p align="center">
-  <a href="https://getartcraft.com/"><img alt="ArtCraft" src="docs/brand/artcraft-mark.svg" width="28"></a><br>
-  <sub>Được thực hiện bởi đội ngũ <a href="https://getartcraft.com/">ArtCraft</a> và cộng đồng.</sub>
-</p>
 
 ---
 

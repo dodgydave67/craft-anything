@@ -41,6 +41,8 @@ use std::time::{Duration, Instant};
 pub mod activity;
 mod brief;
 mod check;
+#[cfg(test)]
+mod desktop_observation_tests;
 pub mod feed;
 mod kept_check;
 pub mod kinds;
@@ -918,7 +920,14 @@ impl Worker {
         drop(s);
         let cx = BriefCx { ws, deep, ghidra, editor: self.editor.as_deref(), assets: self.assets, image_model: image_model.as_deref(), sees_pictures };
         // The project's settings as they are now, for an agent that carries on its session.
-        let now = || kind.follow_up_sections(&cx).iter().map(|s| format!("\n\n{s}")).collect::<String>() + &pictures_reminder(ws, sees_pictures);
+        let now = || {
+            let mut sections = kind.follow_up_sections(&cx).iter().map(|s| format!("\n\n{s}")).collect::<String>() + &pictures_reminder(ws, sees_pictures);
+            if !deep && sees_pictures && matches!(ws.manifest.target, TargetRef::Local { .. }) {
+                sections.push_str("\n\n");
+                sections.push_str(live_ui_reminder());
+            }
+            sections
+        };
         let mut prompt = match &opts.message {
             // An agent with a saved session gets the follow-up; one without (an API loop) starts
             // from the brief with the request added.

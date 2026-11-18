@@ -1,13 +1,4 @@
 <p align="center">
-  <a href="https://getartcraft.com/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/brand/artcraft-logo-white.svg">
-      <img alt="ArtCraft" src="docs/brand/artcraft-logo.svg" width="200">
-    </picture>
-  </a>
-</p>
-
-<p align="center">
   <img src="assets/app-icon/hicolor/256x256/apps/ai.storyteller.craft-anything.png" width="128" height="128" alt="Craft Anything simgesi: mavi bir karo üzerinde kazınmış bir kuzgun">
 </p>
 
@@ -424,8 +415,3 @@ hesap makinesi programı.
 ve bu lisansın kapsamında değildir. Yalnızca değiştirilmeden, yalnızca bu deponun ve Craft Anything'in bir parçası
 olarak, [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt) koşullarıyla kullanılabilirler.
 Fork'lar ve değiştirilmiş sürümler bunları kaldırmalıdır.
-
-<p align="center">
-  <a href="https://getartcraft.com/"><img alt="ArtCraft" src="docs/brand/artcraft-mark.svg" width="28"></a><br>
-  <sub><a href="https://getartcraft.com/">ArtCraft</a> ekibi ve topluluğu tarafından yapıldı.</sub>
-</p>

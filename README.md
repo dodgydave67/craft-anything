@@ -1,11 +1,4 @@
-<p align="center">
-  <a href="https://getartcraft.com/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/brand/artcraft-logo-white.svg">
-      <img alt="ArtCraft" src="docs/brand/artcraft-logo.svg" width="200">
-    </picture>
-  </a>
-</p>
+> Unofficial Codex Windows build. Based on Craft Anything by the ArtCraft team. [Build notes and instructions](docs/codex-windows-fork.md).
 
 <p align="center">
   <img src="assets/app-icon/hicolor/256x256/apps/ai.storyteller.craft-anything.png" width="128" height="128" alt="Craft Anything icon: an engraved raven on a blue tile">
@@ -424,8 +417,3 @@ The ArtCraft name, wordmark and logos in [`docs/brand/`](docs/brand/) are tradem
 ArtCraft Team and are not covered by this license. They may be used only unmodified, and only as
 part of this repository and Craft Anything, under [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt).
 Forks and modified versions must remove them.
-
-<p align="center">
-  <a href="https://getartcraft.com/"><img alt="ArtCraft" src="docs/brand/artcraft-mark.svg" width="28"></a><br>
-  <sub>Made by the <a href="https://getartcraft.com/">ArtCraft</a> team and community.</sub>
-</p>

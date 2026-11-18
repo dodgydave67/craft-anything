@@ -1,13 +1,4 @@
 <p align="center">
-  <a href="https://getartcraft.com/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/brand/artcraft-logo-white.svg">
-      <img alt="ArtCraft" src="docs/brand/artcraft-logo.svg" width="200">
-    </picture>
-  </a>
-</p>
-
-<p align="center">
   <img src="assets/app-icon/hicolor/256x256/apps/ai.storyteller.craft-anything.png" width="128" height="128" alt="Craft Anything 아이콘: 파란 타일 위에 새겨진 까마귀">
 </p>
 
@@ -344,11 +335,6 @@ Copyright (c) 2026 ArtCraft Team and the Craft Anything contributors ([CONTRIBUT
 스크린샷에 보이는 것은 그 용도로 만든 예시 프로젝트입니다: example.com, 뱀 게임, 작은 계산기 프로그램.
 
 [`docs/brand/`](docs/brand/)에 있는 ArtCraft 이름, 워드마크, 로고는 ArtCraft Team의 상표이며 이 라이선스의 적용을 받지 않습니다. 수정하지 않은 상태에서만, 이 저장소와 Craft Anything의 일부로서만 사용할 수 있으며, 이때 [`docs/brand/LICENSE-brand.txt`](docs/brand/LICENSE-brand.txt)를 따라야 합니다. 포크와 수정본은 이를 제거해야 합니다.
-
-<p align="center">
-  <a href="https://getartcraft.com/"><img alt="ArtCraft" src="docs/brand/artcraft-mark.svg" width="28"></a><br>
-  <sub><a href="https://getartcraft.com/">ArtCraft</a> 팀과 커뮤니티가 만들었습니다.</sub>
-</p>
 
 ---
 
