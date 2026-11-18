@@ -41,12 +41,9 @@ jobs:
           }
       - name: Compile desktop and CLI
         run: cargo build --locked --release --target x86_64-pc-windows-msvc -p craft-anything -p craft-anything-cli
-      - name: Codex adapter and rebuild regression tests
-        run: cargo test --locked --release --target x86_64-pc-windows-msvc -p craft-anything-ai --lib
-      - name: Setup regression tests
-        run: cargo test --locked --release --target x86_64-pc-windows-msvc -p craft-anything-setup --lib
-      - name: Windows visible-control walkthrough tests
-        run: cargo test --locked --release --target x86_64-pc-windows-msvc -p craft-anything-engine --lib tools::apple_runtime::tests -- --test-threads=1
+      - name: Codex, setup, live window and MCP regression tests
+        shell: pwsh
+        run: ./packaging/windows/test-codex.ps1
       - name: Policy checks
         shell: pwsh
         run: |

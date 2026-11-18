@@ -922,7 +922,7 @@ impl Worker {
         // The project's settings as they are now, for an agent that carries on its session.
         let now = || {
             let mut sections = kind.follow_up_sections(&cx).iter().map(|s| format!("\n\n{s}")).collect::<String>() + &pictures_reminder(ws, sees_pictures);
-            if !deep && matches!(ws.manifest.target, TargetRef::Local { .. }) {
+            if !deep && sees_pictures && matches!(ws.manifest.target, TargetRef::Local { .. }) {
                 sections.push_str("\n\n");
                 sections.push_str(live_ui_reminder());
             }

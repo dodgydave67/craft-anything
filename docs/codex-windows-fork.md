@@ -8,6 +8,7 @@ The exact patched commit is in the download's BUILD.txt.
 
 - Includes the upstream Codex session-resume implementation absent from v0.6.1. Follow-ups resume the project's saved thread instead of starting over.
 - Lets Codex request runtime_ui_read and runtime_ui_walkthrough_record without editing config.toml by hand. Craft Anything's consent cards still decide whether those calls run.
+- Implements screenshot=true for runtime_ui_read on Windows: captures the current window without launching or closing the app, bounds it to 2048 pixels per side, and returns it as an MCP image block so the model can see it. Screenshot failures remain explicit limitations.
 - Directs Clean-room desktop builds to recover recorded observations and the unfinished step, including after a reply such as “done”.
 - Makes screenshot reminders respect the latest requested state and live observations. A startup-screen score does not establish editor or behavioural parity.
 
@@ -26,5 +27,7 @@ The exact patched commit is in the download's BUILD.txt.
 This is an unsigned x64 community build, not an official release. The Windows workflow compiles both programs, runs AI/setup regressions, checks the consent-gated UI tools against a synthetic Windows application, and checks the CLI and desktop version commands before publishing a download. Check the linked workflow result before treating those checks as passed.
 
 Microsoft Publisher and the user's Codex sign-in are not available on the build runner. There is no claim of an end-to-end Publisher recreation test, identical model behaviour, or full Claude Code feature parity. Codex still uses its own sandbox; Claude Code's mid-turn notes, permission hooks and read-only forked questions are separate capabilities. The existing runtime tools automate visible-control actions, not arbitrary typing or drag gestures.
+
+The build also corrects a Windows-only test fixture to use the Windows launcher filename, so the full AI regression suite can run on Windows.
 
 R2.2 personal-fork work; claimed by Codex on branch `bugfix/r2.2-codex-windows-walkthrough`.

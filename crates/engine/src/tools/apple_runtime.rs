@@ -14,6 +14,9 @@ use schemars::JsonSchema;
 use serde::Deserialize;
 use serde_json::Value;
 
+#[cfg(any(windows, test))]
+mod screenshot;
+
 pub fn specs() -> Vec<ToolSpec> {
     let runtime = Toolset::Runtime;
     // All three run or inspect a live process, so they execute foreign code and need consent.
@@ -22,10 +25,10 @@ pub fn specs() -> Vec<ToolSpec> {
         ToolSpec {
             id: "runtime_ui_read",
             title: "Read an app's screen",
-            summary: "Read the UI tree of a running app by its pid: every window's controls in order with their depth, role, title, identifier and value (macOS: the accessibility tree, optionally with a screenshot; Windows: UI Automation, also the class, position and size, and whether it's enabled; window_id picks one window by its handle). Password fields' values are never read; long values are cut at 500 characters. Other hosts get a clear wrong_os result.",
+            summary: "Read the visible UI of a running app by its pid: controls with depth, role, title, identifier and value. screenshot=true also pictures an existing window on Windows and macOS, without restarting or closing the app; window_id selects one window belonging to that pid. The UI tree omits password values and cuts long values at 500 characters; the screenshot shows the visible window. Other hosts get a clear wrong_os result.",
             beginner: "See the buttons, labels and fields of a running app.",
             toolset: runtime,
-            effects,
+            effects: effects.union(Effects::CARRIES_TARGET_CONTENT),
             requires: Requires::Os(&["macos", "windows"]),
             input_schema: schema_of::<ObserveUiParams>,
             run: runtime_ui_read,
@@ -75,8 +78,8 @@ pub struct ObserveUiParams {
     /// A specific window to restrict to (on Windows, its window handle).
     #[serde(default)]
     pub window_id: Option<u64>,
-    /// Include a screenshot (PNG, base64) alongside the tree. macOS 14+: captures one on-screen
-    /// window belonging to pid, restricted by window_id when supplied, at up to 2048 pixels
+    /// Include a screenshot (PNG, base64) alongside the tree. Windows and macOS 14+: captures one
+    /// existing window belonging to pid, restricted by window_id when supplied, at up to 2048 pixels
     /// per side. Without window_id, captures the first matching window. Needs existing Screen
     /// Recording permission; failures are explicit limitations and never open permission dialogs.
     #[serde(default)]
@@ -585,17 +588,37 @@ mod windows {
 
     pub fn runtime_ui_read(ctx: &mut Ctx<'_>, p: ObserveUiParams) -> Result<ToolOutput, ToolError> {
         let pid = p.pid.ok_or_else(|| ToolError::invalid("pid is required to read a running app's UI"))?;
-        let result = ui_tree(ctx, pid, p.window_id, if p.accessibility { p.max_nodes } else { 0 })?;
+        let mut result = ui_tree(ctx, pid, p.window_id, if p.accessibility { p.max_nodes } else { 0 })?;
+        let screenshot_error = if p.screenshot {
+            match craft_anything_platform::window::capture_existing_window(pid, p.window_id).and_then(super::screenshot::artifact) {
+                Ok(screenshot) => {
+                    if let Some(object) = result.as_object_mut() {
+                        object.insert("screenshot".into(), screenshot);
+                    }
+                    None
+                }
+                Err(error) => {
+                    if let Some(object) = result.as_object_mut() {
+                        object.insert("screenshot_error".into(), json!({"code": "screenshot_unavailable", "message": error.message}));
+                    }
+                    Some(error.message)
+                }
+            }
+        } else {
+            None
+        };
         let nodes = result.get("nodes").and_then(Value::as_array).map(Vec::len).unwrap_or(0);
         let mut b = EvidenceBuilder::new("runtime_ui_read", Subject { kind: "ui".into(), sha256: None, name: Some(format!("pid {pid}")) }, env(ctx))
-            .params(json!({"pid": pid, "max_nodes": p.max_nodes, "screenshot": p.screenshot, "window_id": p.window_id}))
+            .params(json!({"pid": pid, "max_nodes": p.max_nodes, "screenshot": p.screenshot, "window_id": p.window_id, "accessibility": p.accessibility}))
             .result(result)
             .summary(format!("Read {nodes} UI element(s) from pid {pid}."))
             .confidence(Confidence::Observed)
             .authority(Authority::OurRun)
             .limitation(control_view());
-        if p.screenshot {
-            b = b.limitation(Limitation::new("no_screenshot", "No screenshot is taken on Windows here; native_window_capture takes one."));
+        if let Some(message) = screenshot_error {
+            b = b
+                .limitation(Limitation::new("screenshot_unavailable", message))
+                .coverage(craft_anything_evidence::Coverage { status: craft_anything_evidence::CoverageStatus::Partial, ..Default::default() });
         }
         Ok(ToolOutput::evidence(b.build()?))
     }
@@ -807,6 +830,11 @@ mod tests {
     /// holding "hunter2" and a checkbox. Returns once its window can be read.
     #[cfg(windows)]
     fn test_window(e: &Engine) -> std::process::Child {
+        test_window_at(e, false)
+    }
+
+    #[cfg(windows)]
+    fn test_window_at(e: &Engine, visible: bool) -> std::process::Child {
         let form = "Add-Type -AssemblyName System.Windows.Forms, System.Drawing; $f = New-Object Windows.Forms.Form; \
             $f.StartPosition = 'Manual'; $f.Location = New-Object Drawing.Point(-4000, -4000); $f.ShowInTaskbar = $false; \
             $b = New-Object Windows.Forms.Button; $b.Name = 'hiButton'; $b.Text = 'Say hi'; \
@@ -814,7 +842,12 @@ mod tests {
             $pw = New-Object Windows.Forms.TextBox; $pw.UseSystemPasswordChar = $true; $pw.Text = 'hunter2'; $pw.Top = 70; \
             $c = New-Object Windows.Forms.CheckBox; $c.Text = 'Remember me'; $c.Top = 100; \
             $f.Controls.AddRange(@($b, $t, $pw, $c)); [void]$f.ShowDialog()";
-        let child = std::process::Command::new("powershell").args(["-NoProfile", "-NonInteractive", "-Command", form]).spawn().unwrap();
+        let form = if visible {
+            form.replace("(-4000, -4000)", "(100, 100)").replace("$f.ShowInTaskbar = $false;", "$f.Text = 'Craft capture fixture'; $f.ShowInTaskbar = $true;")
+        } else {
+            form.to_string()
+        };
+        let child = std::process::Command::new("powershell").args(["-NoProfile", "-NonInteractive", "-Command", &form]).spawn().unwrap();
         for _ in 0..40 {
             std::thread::sleep(std::time::Duration::from_millis(500));
             if e.call("runtime_ui_read", json!({"pid": child.id(), "max_nodes": 1}), granted()).is_ok() {
@@ -835,6 +868,32 @@ mod tests {
         let tree = tree.expect("the test window was read");
         assert!(tree.contains(r#""role":"Edit""#), "Win32 and WinForms controls are recognised: {tree}");
         assert!(!tree.contains("hunter2"), "a password box's text never shows: {tree}");
+    }
+
+    /// Pictures the current window and leaves the original process alive for the next action.
+    #[cfg(windows)]
+    #[test]
+    fn windows_captures_an_existing_window_without_restarting_or_closing_it() {
+        let e = Engine::new(crate::testing::session());
+        let mut child = test_window_at(&e, true);
+        let result = e.call("runtime_ui_read", json!({"pid": child.id(), "screenshot": true}), granted()).map(|out| out.to_json());
+        let wrong_window = craft_anything_platform::window::capture_existing_window(child.id(), Some(u64::MAX));
+        let still_running = child.try_wait().unwrap().is_none();
+        let _ = child.kill();
+        let _ = child.wait();
+        let output = result.unwrap();
+        assert_eq!(wrong_window.unwrap_err().code, craft_anything_evidence::ErrorCode::NotFound, "must not capture another window");
+        assert!(still_running, "observing must leave the target open");
+        let shot = &output["result"]["screenshot"];
+        assert_eq!(shot["media_type"], "image/png", "{output}");
+        let bytes = crate::tools::web_common::b64_decode(shot["base64"].as_str().unwrap()).unwrap();
+        assert!(bytes.starts_with(b"\x89PNG\r\n\x1a\n"));
+        let decoded = crate::tools::web_common::decode_png(&bytes).unwrap();
+        let first = decoded.rgba.get(..4).unwrap();
+        assert!(decoded.rgba.chunks_exact(4).any(|pixel| pixel != first), "a real window must contain more than a blank rectangle");
+        assert!(shot["width"].as_u64().unwrap() > 32 && shot["width"].as_u64().unwrap() <= 2048);
+        assert!(shot["height"].as_u64().unwrap() > 32 && shot["height"].as_u64().unwrap() <= 2048);
+        assert!(output["result"].get("screenshot_error").is_none(), "{output}");
     }
 
     #[cfg(windows)]

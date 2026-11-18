@@ -64,10 +64,25 @@ fn is_named(owner: &str, want: &str) -> bool {
 /// launcher that starts the real program) to a process whose name matches `app_name`.
 #[cfg(any(windows, target_os = "macos"))]
 pub fn capture_window(pid: u32, app_name: Option<&str>) -> Result<WindowShot, ToolError> {
+    capture_selected_window(pid, app_name, None)
+}
+
+/// Picture an existing process without launching or closing it. An explicit window id must
+/// belong to that process; it never falls back to another app or window.
+#[cfg(any(windows, target_os = "macos"))]
+pub fn capture_existing_window(pid: u32, window_id: Option<u64>) -> Result<WindowShot, ToolError> {
+    capture_selected_window(pid, None, window_id)
+}
+
+#[cfg(any(windows, target_os = "macos"))]
+fn capture_selected_window(pid: u32, app_name: Option<&str>, window_id: Option<u64>) -> Result<WindowShot, ToolError> {
     let windows = xcap::Window::all().map_err(|e| ToolError::new(ErrorCode::FeatureMissing, format!("Can't list windows on this computer: {e}")))?;
     let usable = |w: &xcap::Window| !w.is_minimized().unwrap_or(true) && w.width().unwrap_or(0) > 32 && w.height().unwrap_or(0) > 32;
     let area = |w: &xcap::Window| u64::from(w.width().unwrap_or(0)) * u64::from(w.height().unwrap_or(0));
-    let by_pid = windows.iter().filter(|w| usable(w) && w.pid().ok() == Some(pid)).max_by_key(|w| area(w));
+    let by_pid = windows
+        .iter()
+        .filter(|w| usable(w) && w.pid().ok() == Some(pid) && window_id.is_none_or(|id| w.id().ok().map(u64::from) == Some(id)))
+        .max_by_key(|w| area(w));
     let chosen = by_pid.or_else(|| {
         let want = app_name?.to_ascii_lowercase();
         windows.iter().filter(|w| usable(w) && w.app_name().is_ok_and(|n| is_named(&n, &want))).max_by_key(|w| area(w))
@@ -76,6 +91,9 @@ pub fn capture_window(pid: u32, app_name: Option<&str>) -> Result<WindowShot, To
         return Err(ToolError::new(ErrorCode::NotFound, "The program didn't show a window to picture.")
             .with_remediation("Give it longer to start (wait_secs), or check that it opens a window."));
     };
+    if area(w) > 64 * 1024 * 1024 {
+        return Err(ToolError::new(ErrorCode::OverLimit, "The window is too large to capture safely."));
+    }
     let img = w.capture_image().map_err(|e| ToolError::new(ErrorCode::ProgramFailed, format!("Couldn't picture the window: {e}")))?;
     Ok(WindowShot {
         title: w.title().unwrap_or_default(),
@@ -89,6 +107,11 @@ pub fn capture_window(pid: u32, app_name: Option<&str>) -> Result<WindowShot, To
 /// Linux and the BSDs: not built in yet (ROADMAP R2.4).
 #[cfg(not(any(windows, target_os = "macos")))]
 pub fn capture_window(_pid: u32, _app_name: Option<&str>) -> Result<WindowShot, ToolError> {
+    Err(unsupported())
+}
+
+#[cfg(not(any(windows, target_os = "macos")))]
+pub fn capture_existing_window(_pid: u32, _window_id: Option<u64>) -> Result<WindowShot, ToolError> {
     Err(unsupported())
 }
 

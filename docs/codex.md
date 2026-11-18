@@ -170,3 +170,5 @@ and save no session id.
 ## Personal Windows walkthrough build
 
 See [the fork build notes](codex-windows-fork.md) for the download workflow, observation-continuation changes and verification limits.
+
+Windows runtime observation in this fork supports `runtime_ui_read` with `screenshot: true` on an already-running process. Its PNG is delivered as an MCP image content block alongside control-tree metadata; it does not relaunch or close the original. Images are limited to 2048 pixels per side and 2 MiB encoded PNG, and capture failures remain explicit evidence limitations.

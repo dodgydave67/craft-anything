@@ -107,7 +107,7 @@ fn program_from_outside(sees: bool) -> String {
     );
     format!(
         "capture/README.md says what we could see from outside. Clean room: nothing inside the program, its files or its folder was read, and you must not open, list, read or decompile anything there either (the tools that look inside are off, and reading its files is refused). {build_from}\n\n{}",
-        live_ui_reminder(),
+        if sees { live_ui_reminder() } else { "" },
     )
 }
 
@@ -370,7 +370,7 @@ pub(super) fn pictures_reminder(ws: &Workspace, sees: bool) -> String {
 /// Runtime observation is available in Clean room, but the builder must retain its evidence
 /// when a follow-up resumes the conversation instead of returning to the first uploaded image.
 pub(super) fn live_ui_reminder() -> &'static str {
-    "Live desktop observation: when the task needs another screen, use runtime_ui_read on the running original and runtime_ui_walkthrough_record for supported visible-control actions. These tools ask for consent in Craft Anything; never bypass that consent or inspect the original's files, code, resources or process memory. Read the tools' schemas and use only supported actions. If the app is not running and no permitted tool can start it, ask the person to open it. For unsupported actions such as drawing or typing, ask for just that action, then read the live UI again after their reply. Before implementing a follow-up, call core_investigation_show to recover its handoff, recorded observations and unfinished step; a reply such as 'done' continues that step. Browse the referenced evidence when needed rather than repeating an already answered observation. Before yielding, update core_handoff_write with the observed states, evidence ids, implemented work, outstanding questions and exact next step. Implement the requested observed state in app/ and verify that same state; don't declare the whole app matched from its startup screenshot."
+    "Live desktop observation: when the task needs another screen, use runtime_ui_read with screenshot=true on the running original and runtime_ui_walkthrough_record for supported visible-control actions. After changing a visible state, call runtime_ui_read with screenshot=true again and study the returned image as well as the controls; it pictures the existing window without restarting or closing it. These tools ask for consent in Craft Anything; never bypass that consent or inspect the original's files, code, resources or process memory. Read the tools' schemas and use only supported actions. If the app is not running and no permitted tool can start it, ask the person to open it. For unsupported actions such as drawing or typing, ask for just that action, then read the live UI again after their reply. Before implementing a follow-up, call core_investigation_show to recover its handoff, recorded observations and unfinished step; a reply such as 'done' continues that step. Browse the referenced evidence when needed rather than repeating an already answered observation. Before yielding, update core_handoff_write with the observed states, evidence ids, implemented work, outstanding questions and exact next step. Implement the requested observed state in app/ and verify that same state; don't declare the whole app matched from its startup screenshot."
 }
 
 pub(super) fn added_prompt(notes: &[String]) -> String {
